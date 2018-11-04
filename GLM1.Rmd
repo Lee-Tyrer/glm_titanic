@@ -1,0 +1,62 @@
+---
+title: "Logistic Regression of Titanic"
+author: "Lee Tyrer""
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  fig.path = "README_figs/README-"
+)
+```
+
+
+```{r}
+setwd("C:/Users/Lee/Downloads")
+Titanic <- read.csv('titanic.csv')
+
+summary(Titanic)
+str(Titanic)
+
+```
+
+# Removing Name from the dataset as it provides all unique observations
+```{r}
+Titanic$Name <- NULL
+```
+
+# Quick EDA of the data
+## Summary of number of survivors
+```{r}
+table(Titanic$Survived)
+```
+
+## Histogram of Age and Sex
+```{r}
+hist(Titanic$Age)
+
+plot(Titanic$Sex)
+```
+
+# Modelling the survival of the titanic passengers according to 'Age' and 'Sex'.
+```{r}
+glm.fit <- glm(Survived ~ Age + Sex, family=binomial(link='logit'), data = Titanic)
+
+summary(glm.fit)
+```
+
+# Drop in deviance test to determine if 'Age' can provide greater information for the model in comparison to the constrained model without 'Age'. 
+```{r}
+anova(glm.fit, test = 'Chisq')
+```
+
+# Quick interpretation of the data
+```{r, warning=FALSE}
+exp(cbind(glm.fit$coefficients, confint(glm.fit)))
+```
+
+We would expect that males have a lower odds of survival at 0.08208494 in comparison to the females. Looking at the age variable, for each one unit increase in age, our model reports the odds of survival is a multiplicative of 0.9979424.
+
+In summary, older individuals have a lower odds of survival and that females have a greater odds of survival than males.
